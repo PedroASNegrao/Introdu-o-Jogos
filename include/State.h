@@ -1,8 +1,11 @@
 #pragma once
+#include "Music.h"
+#include "Sprite.h"
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
-#include "Sprite.h"
-#include "Music.h"
+#define INCLUDE_SDL
+#include "SDL_include.h"
+
 
 /************************************************
 *					State.h						*

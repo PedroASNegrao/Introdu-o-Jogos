@@ -8,6 +8,12 @@
 #define INCLUDE_SDL
 #include "SDL_include.h"
 
+//Pro meu pc:---------
+/*#include "SDL_image.h"
+#include "SDL_mixer.h"
+#include "SDL_ttf.h"*/
+//--------------------
+
 using namespace std;
 using std::cerr;
 
@@ -46,7 +52,7 @@ Game::Game(string title, int width, int height) {
 
 	if (!Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3)) {
 		cerr << "\n\n SDL_MIXER não pode ser inicializado \n\n";
-		exit(1);
+		//exit(1); O monitor mandou comentar 
 	}
 
 	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024)) {

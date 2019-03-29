@@ -7,6 +7,13 @@
 #include <string>
 #include <iostream>
 
+//Pro meu pc:---------	
+/*
+#include "SDL_image.h"
+#include "SDL_mixer.h"
+#include "SDL_ttf.h" */
+//-------------------- 
+
 using namespace std;
 using std::cerr;
 
