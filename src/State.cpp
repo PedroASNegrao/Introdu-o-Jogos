@@ -1,14 +1,14 @@
 #include "Game.h"
 #include "State.h"
-#include "SDL.h"
-#include "SDL_image.h"
-#include "SDL_mixer.h"
-#include "SDL_ttf.h"
+#define INCLUDE_SDL_IMAGE
+#define INCLUDE_SDL_MIXER
+#define INCLUDE_SDL
+#include "SDL_include.h"
 #include <string>
 
 using namespace std;
 
-State::State() : bg("./Recursos/img/ocean.jpg"), music("./Recursos/audio/stageState.ogg") {
+State::State() : bg("./assets/img/ocean.jpg"), music("./assets/audio/stageState.ogg") {
 	quitRequested = false;
 	music.Play();
 }
@@ -32,7 +32,3 @@ bool State::QuitRequested() {
 void State::Render() {
 	bg.Render(0, 0);
 }
-
-
-
-

@@ -1,9 +1,9 @@
 #include "Sprite.h"
 #include "Game.h"
-#include "SDL.h"
-#include "SDL_image.h"
-#include "SDL_mixer.h"
-#include "SDL_ttf.h"
+#define INCLUDE_SDL_IMAGE
+#define INCLUDE_SDL_MIXER
+#define INCLUDE_SDL
+#include "SDL_include.h"
 #include <string>
 #include <iostream>
 
@@ -73,12 +73,6 @@ void Sprite::Render(int x, int y) {
 		exit(1);
 	}
 
-	/*
-	SDL_Renderer* renderer;
-	SDL_Texture* texture;
-	SDL_Rect* srcrect;
-	SDL_Rect* dstrect;
-	*/
 }
 
 bool Sprite::IsOpen() {
