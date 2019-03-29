@@ -1,20 +1,23 @@
 #include "Game.h"
 #include "State.h"
-#include "SDL.h"
-#include "SDL_image.h"
-#include "SDL_mixer.h"
-#include "SDL_ttf.h"
 #include <iostream>
 #include <string>
 
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
+#define INCLUDE_SDL
+#include "SDL_include.h"
+
+//Pro meu pc:---------
+/*#include "SDL_image.h"
+#include "SDL_mixer.h"
+#include "SDL_ttf.h"*/
+//--------------------
 
 using namespace std;
 using std::cerr;
 
-
-Game*Game::instance = nullptr;
+Game* Game::instance = nullptr;
 
 Game& Game::GetInstance() {
 
@@ -49,7 +52,7 @@ Game::Game(string title, int width, int height) {
 
 	if (!Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3)) {
 		cerr << "\n\n SDL_MIXER não pode ser inicializado \n\n";
-		exit(1);
+		//exit(1); O monitor mandou comentar 
 	}
 
 	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024)) {
@@ -63,6 +66,7 @@ Game::Game(string title, int width, int height) {
 	}
 
 	window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0);
+
 	if (!window) {
 		cerr << "\n\n A janela nao pode ser criada \n\n";
 		exit(1);
@@ -76,7 +80,6 @@ Game::Game(string title, int width, int height) {
 
 	state = new State();
 
-	
 	}
 
 	Game::~Game() {
@@ -100,7 +103,7 @@ Game::Game(string title, int width, int height) {
 	
 	void Game::Run() {
 		while (!Game::GetState().QuitRequested()) {
-			Game::GetState().Update(75);
+			Game::GetState().Update(86);
 			Game::GetState().Render();
 			SDL_RenderPresent(Game::GetInstance().GetRenderer());
 			SDL_Delay(33);
