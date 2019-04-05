@@ -9,9 +9,11 @@
 #include "SDL_include.h"
 
 //Pro meu pc:---------
-/*#include "SDL_image.h"
+
+#include "SDL_image.h"
 #include "SDL_mixer.h"
-#include "SDL_ttf.h"*/
+#include "SDL_ttf.h"
+
 //--------------------
 
 using namespace std;
@@ -80,33 +82,33 @@ Game::Game(string title, int width, int height) {
 
 	state = new State();
 
+}
+
+Game::~Game() {
+
+	delete state;
+	Mix_CloseAudio();
+	Mix_Quit();
+	IMG_Quit();
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
+}
+
+State& Game::GetState() {
+	return *state;
+}
+
+SDL_Renderer* Game::GetRenderer() {
+	return renderer;
+}
+
+void Game::Run() {
+	while (!Game::GetState().QuitRequested()) {
+		Game::GetState().Update(86);
+		Game::GetState().Render();
+		SDL_RenderPresent(Game::GetInstance().GetRenderer());
+		SDL_Delay(33);
 	}
 
-	Game::~Game() {
-
-		delete state;
-		Mix_CloseAudio();
-		Mix_Quit();
-		IMG_Quit();
-		SDL_DestroyRenderer(renderer);
-		SDL_DestroyWindow(window);
-		SDL_Quit();
-	}
-
-	State& Game::GetState() {
-		return *state;
-	}
-
-	SDL_Renderer* Game::GetRenderer() {
-		return renderer;
-	}
-	
-	void Game::Run() {
-		while (!Game::GetState().QuitRequested()) {
-			Game::GetState().Update(86);
-			Game::GetState().Render();
-			SDL_RenderPresent(Game::GetInstance().GetRenderer());
-			SDL_Delay(33);
-		}
-
-	}
+}

@@ -8,27 +8,27 @@
 #include <iostream>
 
 //Pro meu pc:---------	
-/*
+
 #include "SDL_image.h"
 #include "SDL_mixer.h"
-#include "SDL_ttf.h" */
+#include "SDL_ttf.h" 
 //-------------------- 
 
 using namespace std;
 using std::cerr;
 
-Sprite::Sprite() {
-	texture = nullptr;
+
+Sprite::Sprite(GameObject &associated) : Component(associated), texture(nullptr), width(0), height(0) {
+
 }
 
-Sprite::Sprite(string file) {
-	texture = nullptr;
+Sprite::Sprite(GameObject &associated, string file) : Component(associated), texture(nullptr), width(0), height(0) {
 	Open(file);
 }
 
 Sprite::~Sprite() {
 	if (IsOpen() == false) {
-	SDL_DestroyTexture(texture);
+		SDL_DestroyTexture(texture);
 	}
 }
 
@@ -38,6 +38,14 @@ int Sprite::GetHeight() {
 
 int Sprite::GetWidth() {
 	return width;
+}
+
+void Sprite::SetClip(int x, int y, int w, int h) {
+	clipRect.x = x;
+	clipRect.y = y;
+	clipRect.w = w;
+	clipRect.h = h;
+	//dimensões da imagem
 }
 
 void Sprite::Open(string file) {
@@ -59,19 +67,12 @@ void Sprite::Open(string file) {
 
 }
 
-void Sprite::SetClip(int x, int y, int w, int h) {
-	clipRect.x = x;
-	clipRect.y = y;
-	clipRect.w = w;
-	clipRect.h = h;
-	//dimensões da imagem
-}
 
-void Sprite::Render(int x, int y) {
+void Sprite::Render() {
 
 	SDL_Rect dstRect;
-	dstRect.x = x;
-	dstRect.y = y;
+	dstRect.x = this->associated.box.x;
+	dstRect.y = this->associated.box.y;
 	dstRect.w = clipRect.w;
 	dstRect.h = clipRect.h;
 
@@ -89,5 +90,13 @@ bool Sprite::IsOpen() {
 	else {
 		return false;
 	}
-	
+
+}
+
+void Sprite::Update(float dt) {
+
+}
+
+bool Sprite::Is(string type) {
+	return (type == "Sprite");
 }

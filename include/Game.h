@@ -1,3 +1,4 @@
+#pragma once
 /* - Como usar esse arquivo:
  *
  * Onde quiser adicionar, por exemplo, SDL_image e SDL_mixer em um arquivo, faça o seguinte e
@@ -8,10 +9,14 @@
 #define INCLUDE_SDL
 #include "SDL_include.h"
 #include "State.h"
+#include <string>
+#include <iostream>
 
-/************************************************
-*					Game.h						*
-*************************************************/
+using namespace std;
+
+ /************************************************
+ *					Game.h						*
+ *************************************************/
 class Game {
 public:
 	~Game();
@@ -34,7 +39,8 @@ private:
 
 	SDL_Renderer* renderer;
 
-	Game( string title, int width,	int height);
+	Game(string title, int width, int height);
 
 };
+
 
