@@ -100,4 +100,4 @@
 #error "Unknown compiler"
 #endif
 #undef INCLUDE_SDL_NET 
-#endif // INCLUDE_SDL_NET
+#endif // INCLUDE_SDL_NET#pragma once
