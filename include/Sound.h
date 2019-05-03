@@ -3,35 +3,37 @@
 #define INCLUDE_SDL_MIXER
 #define INCLUDE_SDL
 #include "SDL_include.h"
-#include "Component.h"
 #include <iostream>
 #include <string>
+#include "Component.h"
+
+//Pro meu pc:
+#include "SDL_mixer.h"
+//-----------
+
+
+/************************************************
+*					Sound.h						*
+**************************************************/
 
 using namespace std;
 
-/************************************************
-*					Sprite.h						*
-**************************************************/
-
-class Sprite : public Component {
+class Sound : public Component {
 public:
 
-	Sprite(GameObject &associated);
+	Sound(GameObject& associated);
 
-	Sprite(GameObject &associated, string file);
+	Sound(GameObject& associated, string file);
 
-	~Sprite();
+	~Sound();
+
+	void Play(int times = 1);
+
+	void Stop();
 
 	void Open(string file);
 
-	void SetClip(int x, int y, int w, int h);
-
-	int GetWidth();
-
-	int GetHeight();
-
 	bool IsOpen();
-
 
 	void Update(float dt) override;
 
@@ -39,16 +41,12 @@ public:
 
 	bool Is(string type) override;
 
-
-	void Render(int x, int y);
+	bool PlayKabum();
 
 private:
 
-	SDL_Texture *texture;
+	Mix_Chunk* chunk;
 
-	int width;
+	int chanel;
 
-	int height;
-
-	SDL_Rect clipRect;
 };

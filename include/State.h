@@ -1,11 +1,26 @@
 #pragma once
-#include "Music.h"
-#include "Sprite.h"
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
 #define INCLUDE_SDL
-#include "SDL_include.h"
 
+#include "Music.h"
+#include "Sprite.h"
+#include "SDL_include.h"
+#include "GameObject.h"
+#include "Face.h"
+#include "Sound.h"
+#include "Vec2.h"
+#include "Rect.h"
+#include "TileSet.h"
+#include "TileMap.h"
+#include "InputManager.h"
+#include "Camera.h"
+
+#include <memory>
+#include <vector>
+#include <cmath>
+
+using namespace std;
 
 /************************************************
 *					State.h						*
@@ -14,6 +29,8 @@ class State {
 public:
 
 	State();
+
+	~State();
 
 	bool QuitRequested();
 
@@ -25,10 +42,15 @@ public:
 
 private:
 	
-	Sprite bg;
+	//Sprite bg;
 
 	Music music;
 
 	bool quitRequested;
 
+	void AddObject(float mouseX, float mouseY);
+
+	vector<shared_ptr<GameObject>> objectArray;
+
 }; 
+

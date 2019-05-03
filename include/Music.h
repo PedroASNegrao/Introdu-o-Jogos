@@ -7,7 +7,7 @@
 #include <string>
 
 //Pro meu pc:
-//#include "SDL_mixer.h"
+#include "SDL_mixer.h"
 //-----------
 
 
@@ -40,3 +40,4 @@ private:
 	Mix_Music* music;
 
 };
+
