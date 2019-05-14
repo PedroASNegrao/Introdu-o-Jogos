@@ -1,62 +1,42 @@
-#include "Sprite.h"
-#include "Game.h"
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
 #define INCLUDE_SDL
 #include "SDL_include.h"
+#include "Resources.h"
+#include "Sprite.h"
+#include "Game.h"
 #include <string>
 #include <iostream>
 
 //Pro meu pc:---------	
-/*
+
 #include "SDL_image.h"
 #include "SDL_mixer.h"
-#include "SDL_ttf.h" */
+#include "SDL_ttf.h" 
 //-------------------- 
 
 using namespace std;
 using std::cerr;
 
-Sprite::Sprite() {
-	texture = nullptr;
-}
-
-Sprite::Sprite(string file) {
-	texture = nullptr;
+Sprite::Sprite(GameObject &associated, string file, bool center) : Component(associated), texture(nullptr),
+width(0), height(0), scale(1, 1), centered(center) {
 	Open(file);
 }
 
+Sprite::Sprite(GameObject &associated) : Component(associated), texture(nullptr), width(0), height(0), scale(1, 1) {
+
+}
+
 Sprite::~Sprite() {
-	if (IsOpen() == false) {
-	SDL_DestroyTexture(texture);
-	}
+
 }
 
 int Sprite::GetHeight() {
-	return height;
+	return height * scale.y;
 }
 
 int Sprite::GetWidth() {
-	return width;
-}
-
-void Sprite::Open(string file) {
-
-	if (texture) {
-		SDL_DestroyTexture(texture);
-	}
-
-	texture = IMG_LoadTexture(Game::GetInstance().GetRenderer(), file.c_str());
-
-	if (!texture) {
-		cerr << "IMG_LoadTexture retornou erro: " << SDL_GetError();
-		exit(1);
-	}
-
-	SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
-
-	SetClip(0, 0, width, height);
-
+	return width * scale.x;
 }
 
 void Sprite::SetClip(int x, int y, int w, int h) {
@@ -67,19 +47,31 @@ void Sprite::SetClip(int x, int y, int w, int h) {
 	//dimensões da imagem
 }
 
+void Sprite::Open(string file) {
+
+	texture = Resources::GetImage(file);
+
+	SDL_QueryTexture(texture, nullptr, nullptr, &width, &height);
+
+	associated.box.h = height;
+	associated.box.w = width;
+	
+	SetClip(0, 0, width, height);
+
+}
+
+
 void Sprite::Render(int x, int y) {
+	
+	SDL_Rect dstrect;
+	dstrect.x = (int)(centered ? x - scale.x*width / 2 : x);
+	dstrect.y = (int)(centered ? y - scale.y*height / 2 : y);
+	dstrect.w = (int)(clipRect.w*scale.x);
+	dstrect.h = (int)(clipRect.h*scale.y);
 
-	SDL_Rect dstRect;
-	dstRect.x = x;
-	dstRect.y = y;
-	dstRect.w = clipRect.w;
-	dstRect.h = clipRect.h;
-
-	if (SDL_RenderCopy(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstRect) != 0) {
-		cerr << "SDL_RenderCopy retornou erro " << SDL_GetError();
-		exit(1);
-	}
-
+	SDL_RenderCopyEx(Game::GetInstance().GetRenderer(), texture, &clipRect, &dstrect, associated.angleDeg,
+		nullptr, SDL_FLIP_NONE);
+	
 }
 
 bool Sprite::IsOpen() {
@@ -89,5 +81,36 @@ bool Sprite::IsOpen() {
 	else {
 		return false;
 	}
-	
+
 }
+
+
+void Sprite::Render() {
+	//Render(associated.box.x, associated.box.y);
+	Render(associated.box.x - (int)Camera::pos.x, associated.box.y - (int)Camera::pos.y);
+}
+
+void Sprite::Update(float dt) {
+
+}
+
+bool Sprite::Is(string type) {
+	return (type == "Sprite");
+}
+
+void Sprite::SetScaleX(float scaleX, float scaleY) {
+	if (scaleX != 0) {
+		scale.x = scaleX;
+		associated.box.x = associated.box.x - clipRect.x*scale.x / 2;
+	}
+
+	if (scaleY != 0) {
+		scale.y = scaleY;
+		associated.box.y = associated.box.y - clipRect.y*scale.y / 2;
+	}
+}
+
+Vec2 Sprite::GetScale() {
+	return scale;
+}
+
