@@ -1,3 +1,4 @@
+#pragma once
 /* - Como usar esse arquivo:
  *
  * Onde quiser adicionar, por exemplo, SDL_image e SDL_mixer em um arquivo, faça o seguinte e
@@ -8,10 +9,20 @@
 #define INCLUDE_SDL
 #include "SDL_include.h"
 #include "State.h"
+#include "Resources.h"
+#include "InputManager.h"
+#include <string>
+#include <iostream>
+#include <ctime>
 
-/************************************************
-*					Game.h						*
-*************************************************/
+#define STD_WIDTH 1024
+#define STD_HEIGHT 600
+
+using namespace std;
+
+ /************************************************
+ *					Game.h						*
+ *************************************************/
 class Game {
 public:
 	~Game();
@@ -24,6 +35,8 @@ public:
 
 	static Game&GetInstance();
 
+	float GetDeltaTime();
+
 private:
 
 	State* state;
@@ -34,7 +47,13 @@ private:
 
 	SDL_Renderer* renderer;
 
-	Game( string title, int width,	int height);
+	Game(string title, int width, int height);
 
+	int frameStart;
+
+	float dt;
+
+	void CalculateDeltaTime();
 };
+
 
