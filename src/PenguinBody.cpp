@@ -33,7 +33,7 @@ void PenguinBody::Update(float dt) {
 
 	if (IM.IsKeyDown('w') || IM.IsKeyDown('W')) {
 
-		cout << "Body W." << endl;
+		//cout << "Body W." << endl;
 
 		if (linearSpeed < MAX_SPEED) {
 			linearSpeed += (linearSpeed + SPEED_STEP * dt > MAX_SPEED ? MAX_SPEED - linearSpeed : SPEED_STEP * dt);
@@ -42,7 +42,7 @@ void PenguinBody::Update(float dt) {
 	}
 	else if (IM.IsKeyDown('s') || IM.IsKeyDown('S')) {
 
-		cout << "Body S." << endl;
+		//cout << "Body S." << endl;
 
 		if (linearSpeed > -MAX_SPEED) {
 			linearSpeed -= (linearSpeed - SPEED_STEP * dt < -MAX_SPEED ? MAX_SPEED + linearSpeed :
@@ -60,12 +60,12 @@ void PenguinBody::Update(float dt) {
 	}
 
 	if (IM.IsKeyDown('a') || IM.IsKeyDown('A')) {
-		cout << "Body A." << endl;
+		//cout << "Body A." << endl;
 
 		angle -= ROT_SPEED * dt;
 	}
 	else if (IM.IsKeyDown('d') || IM.IsKeyDown('D')) {
-		cout << "Body D." << endl;
+		//cout << "Body D." << endl;
 		angle += ROT_SPEED * dt;
 	}
 

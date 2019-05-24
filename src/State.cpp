@@ -61,46 +61,6 @@ State::State() : started(false) {
 	quitRequested = false;
 	music.Play();
 
-	/*
-	shared_ptr<GameObject> go(new GameObject());
-	Sprite* spr = new Sprite(*go, "assets/img/ocean.jpg");
-
-	go->AddComponent(new CameraFollower(*go));
-	go->AddComponent(spr);
-	go->box.x = 0;
-	go->box.y = 0;
-	go->box.h = spr->GetHeight();
-	go->box.w = spr->GetWidth();
-
-	objectArray.emplace_back(go);
-
-
-	shared_ptr<GameObject> go2(new GameObject());
-	TileSet* ts = new TileSet(TILE_WIDTH, TILE_HEIGHT, "assets/img/tileset.png");
-	TileMap* map = new TileMap(*go2, "assets/map/tileMap.txt", ts);
-
-
-	go2->AddComponent(map);
-	go2->box.x = 0;
-	go2->box.y = 0;
-
-	objectArray.emplace_back(go2);
-
-
-	shared_ptr<GameObject> go3(new GameObject());
-	Alien* a = new Alien(*go3, 4);
-
-	go3->AddComponent(a);
-	go3->box.x = 512;
-	go3->box.y = 300;
-
-	objectArray.emplace_back(go3);
-
-
-	LoadAssets();
-	quitRequested = false;
-	music.Play();
-	*/
 }
 
 void State::Render() {
