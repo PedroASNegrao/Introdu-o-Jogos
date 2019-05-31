@@ -1,40 +1,43 @@
-/* - Como usar esse arquivo:
- *
- * Onde quiser adicionar, por exemplo, SDL_image e SDL_mixer em um arquivo, faça o seguinte e
- * ele incluirá elas automaticamente e de forma multiplataforma (se usar o makefile tbm fornecido).
- */
+#pragma once
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
 #define INCLUDE_SDL
-#include "SDL_include.h"
-#include "State.h"
+#include <State.h>
 
-/************************************************
-*					Game.h						*
-*************************************************/
+
+#include <string>
+#include <iostream>
+#include <ctime>
+#include <stack>
+
+using namespace std;
+
 class Game {
+
+	int frameStart;
+	float dt;
+
+	static Game *instance;
+
+	State* storedState;
+	SDL_Window* window;
+	SDL_Renderer* renderer;
+
+	stack<unique_ptr<State>> stateStack;
+
+	void CalculateDeltaTime();
+
 public:
+	Game(string title, int width, int height);
 	~Game();
+
+	static Game& GetInstance();
+	SDL_Renderer* GetRenderer();
+	State& GetCurrentState();
+
+	void Push(string type);
 
 	void Run();
 
-	SDL_Renderer *GetRenderer();
-
-	State& GetState();
-
-	static Game&GetInstance();
-
-private:
-
-	State* state;
-
-	static Game*instance;
-
-	SDL_Window* window;
-
-	SDL_Renderer* renderer;
-
-	Game( string title, int width,	int height);
-
+	float GetDeltaTime();
 };
-

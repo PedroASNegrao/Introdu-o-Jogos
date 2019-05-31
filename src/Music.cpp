@@ -46,7 +46,7 @@ bool Music::IsOpen() {
 	if (music != nullptr) {
 		return true;
 	}
-	else{
+	else {
 		return false;
 	}
 
@@ -58,9 +58,6 @@ Music::~Music() {
 	if (music) {
 		Mix_FreeMusic(music);
 	}
-	
+
 
 }
-
-
-

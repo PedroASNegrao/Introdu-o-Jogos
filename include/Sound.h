@@ -5,39 +5,48 @@
 #include "SDL_include.h"
 #include <iostream>
 #include <string>
+#include "Component.h"
 
 //Pro meu pc:
 #include "SDL_mixer.h"
 //-----------
 
 
-
 /************************************************
-*					Music.h						*
+*					Sound.h						*
 **************************************************/
 
 using namespace std;
 
-class Music {
+class Sound : public Component {
 public:
 
-	Music();
+	Sound(GameObject& associated);
 
-	~Music();
+	Sound(GameObject& associated, string file);
 
-	Music(string file);
+	~Sound();
 
-	void Play(int times = -1);
+	void Play(int times = 1);
 
-	void Stop(int msToStop = 1500);
+	void Stop();
 
 	void Open(string file);
 
 	bool IsOpen();
 
+	void Update(float dt) override;
+
+	void Render() override;
+
+	bool Is(string type) override;
+
+	bool PlayKabum();
+
 private:
 
-	Mix_Music* music;
+	Mix_Chunk* chunk;
+
+	int chanel;
 
 };
-

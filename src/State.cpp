@@ -1,16 +1,7 @@
-#include "Game.h"
 #include "State.h"
-#define INCLUDE_SDL_IMAGE
-#define INCLUDE_SDL_MIXER
-#define INCLUDE_SDL
-#include "SDL_include.h"
-#include <string>
 
-using namespace std;
+State::State() : started(false), quitRequested(false), popRequested(false) {
 
-State::State() : bg("./assets/img/ocean.jpg"), music("./assets/audio/stageState.ogg") {
-	quitRequested = false;
-	music.Play();
 }
 
 void State::LoadAssets() {
@@ -19,16 +10,75 @@ void State::LoadAssets() {
 
 void State::Update(float dt) {
 
-	if (SDL_QuitRequested() == true) {
-		quitRequested = true;
-	}
+}
 
+void State::Render() {
+	RenderArray();
 }
 
 bool State::QuitRequested() {
 	return quitRequested;
 }
 
-void State::Render() {
-	bg.Render(0, 0);
+State::~State() {
+	objectArray.clear();
+}
+
+void State::AddObject(float mouseX, float mouseY) {
+
+}
+
+void State::Start() {
+	LoadAssets();
+
+	for (int i = 0; i < (int)objectArray.size(); ++i) {
+		objectArray[i]->Start();
+	}
+
+	started = true;
+}
+
+weak_ptr<GameObject> State::AddObject(GameObject* go) {
+	shared_ptr<GameObject> ptr = shared_ptr<GameObject>(go);
+	objectArray.push_back(shared_ptr<GameObject>(ptr));
+	if (started) {
+		ptr->Start();
+	}
+
+	return weak_ptr<GameObject>(ptr);
+}
+
+weak_ptr<GameObject> State::GetObjectPtr(GameObject *go) {
+
+	for (int i = 0; i < (int)objectArray.size(); ++i) {
+		if (objectArray[i].get() == go) {
+			return weak_ptr<GameObject>(objectArray[i]);
+		}
+	}
+
+	return weak_ptr<GameObject>();
+}
+
+void State::StartArray() {
+	LoadAssets();
+
+	for (int i = 0; i < (int)objectArray.size(); ++i) {
+		objectArray[i]->Start();
+	}
+}
+
+void State::UpdateArray(float dt) {
+	for (int i = 0; i < (int)objectArray.size(); ++i) {
+		objectArray[i]->Update(dt);
+	}
+}
+
+void State::RenderArray() {
+	for (int i = 0; i < (int)objectArray.size(); ++i) {
+		objectArray[i]->Render();
+	}
+}
+
+bool State::PopRequested() {
+	return popRequested;
 }

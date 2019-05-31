@@ -1,112 +1,199 @@
-#include "Game.h"
-#include "State.h"
+#include <Game.h>
 #include <iostream>
 #include <string>
 
+#include <Resources.h>
+#include <InputManager.h>
+#include <StageState.h>
+#include <EndState.h>
+#include <TitleState.h>
+#include <Game.h>
+
 #define INCLUDE_SDL_IMAGE
 #define INCLUDE_SDL_MIXER
+#define INCLUDE_SDL_TTF
 #define INCLUDE_SDL
 #include "SDL_include.h"
 
 //Pro meu pc:---------
-/*#include "SDL_image.h"
+
+#include "SDL_image.h"
 #include "SDL_mixer.h"
-#include "SDL_ttf.h"*/
+#include "SDL_ttf.h"
+
 //--------------------
 
 using namespace std;
 using std::cerr;
 
-Game* Game::instance = nullptr;
+Game *Game::instance = nullptr;
 
-Game& Game::GetInstance() {
+Game &Game::GetInstance() {
 
-	if (instance != nullptr) {
-		return *instance;
-	}
-	else {
+	if (Game::instance == nullptr) {
 		instance = new Game("Pedro Negrao 170153789", 1024, 600);
-		return *instance;
 	}
 
+	return *instance;
 }
 
-Game::Game(string title, int width, int height) {
+Game::Game(string title, int width, int height) : frameStart(0), dt(0) {
 
+	srand(time(NULL));
+
+	int img_flags = (IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF);
 	if (instance != nullptr) {
-		cerr << "\n\n ERRO: o jogo tentou ser instanciado mas a instancia do jogo ja está rodando \n\n";
+		cout << "Existing Game instance when the constructor is called.";
 		exit(1);
 	}
 
 	instance = this;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER)) {
-		cerr << "SDL_Init retornou erro: " << SDL_GetError();
+	// Inicializando a SDL
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0) {
+		cout << "Error on initializing SDL (SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER).";
+		cout << "Last error message: " << SDL_GetError();
 		exit(1);
 	}
 
-	if (!IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF)) {
-		cerr << "\n\n SDL_IMAGE não pode ser inicializado \n\n";
+	// Carregando loaders de formato de imagens
+	if (IMG_Init(img_flags) != img_flags) {
+		cout << "Error on initializing SDL (img_flags).";
+		cout << "Last error message: " << SDL_GetError();
 		exit(1);
 	}
 
-	if (!Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3)) {
-		cerr << "\n\n SDL_MIXER não pode ser inicializado \n\n";
-		//exit(1); O monitor mandou comentar 
-	}
 
-	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024)) {
-		cerr << "\n\n Mix_OpenAudio retornou erro \n\n";
+	// Carregando loaders de audio, por default 0 ja vem com ".wav"
+	Mix_Init(0);
+	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) != 0) {
+		cout << "Fail on initializing audio frequency, format, channels and chunk size.";
 		exit(1);
 	}
+	// Aumentando numero de canais alocados para 32
+	Mix_AllocateChannels(32);
 
-	if (Mix_AllocateChannels(32) != 32) {
-		cerr << "\n\n não foi possível alocar os 32 canais de audio \n\n";
-		exit(1);
-	}
-
+	// Inicializando a janela
 	window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0);
-
-	if (!window) {
-		cerr << "\n\n A janela nao pode ser criada \n\n";
+	if (window == nullptr) {
+		cout << "Fail on creating window.";
 		exit(1);
 	}
 
+	// Criando o renderizador da janela
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-	if (!renderer) {
-		cerr << "\n\n Renderer nao pode ser criado \n\n";
+	if (renderer == nullptr) {
+		cout << "Fail on creating renderer.";
 		exit(1);
 	}
 
-	state = new State();
-
+	if (TTF_Init() != 0) {
+		cout << "Fail on TTF Init.";
+		exit(1);
 	}
 
-	Game::~Game() {
+	storedState = nullptr;
+}
 
-		delete state;
-		Mix_CloseAudio();
-		Mix_Quit();
-		IMG_Quit();
-		SDL_DestroyRenderer(renderer);
-		SDL_DestroyWindow(window);
-		SDL_Quit();
+Game::~Game() {
+	// Deleta State
+	if (storedState != nullptr) {
+		delete storedState;
 	}
 
-	State& Game::GetState() {
-		return *state;
+
+	while (!stateStack.empty()) {
+		stateStack.pop();
 	}
 
-	SDL_Renderer* Game::GetRenderer() {
-		return renderer;
+	Resources::ClearImages();
+	Resources::ClearMusics();
+	Resources::ClearSounds();
+	Resources::ClearFonts();
+
+	// Para o audio
+	Mix_CloseAudio();
+	Mix_Quit();
+
+	// Encerra imagens
+	IMG_Quit();
+
+	// Destroi janela e renderer
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+
+	TTF_Quit();
+
+	// Encerra SDL
+	SDL_Quit();
+
+}
+
+State& Game::GetCurrentState() {
+	auto top = stateStack.top().get();
+	return *top;
+}
+
+SDL_Renderer* Game::GetRenderer() {
+	return renderer;
+}
+
+void Game::Run() {
+
+	if (storedState == nullptr) {
+		cout << "Starting State not stacked by main." << endl;
+		exit(1);
 	}
-	
-	void Game::Run() {
-		while (!Game::GetState().QuitRequested()) {
-			Game::GetState().Update(86);
-			Game::GetState().Render();
-			SDL_RenderPresent(Game::GetInstance().GetRenderer());
-			SDL_Delay(33);
+
+	stateStack.emplace(storedState);
+	storedState = nullptr;
+
+	while (!stateStack.empty() && !stateStack.top()->QuitRequested()) {
+
+		if (stateStack.top()->PopRequested()) {
+			stateStack.pop();
+			if (!stateStack.empty()) {
+				stateStack.top()->Resume();
+			}
 		}
 
+		if (storedState != nullptr) {
+			stateStack.top()->Pause();
+			stateStack.emplace(storedState);
+			stateStack.top()->Resume();
+			storedState = nullptr;
+		}
+
+		CalculateDeltaTime();
+		frameStart = SDL_GetTicks();
+		InputManager::GetInstance().Update();
+		//cout << "DT: " << dt << endl;
+		stateStack.top()->Update(dt);
+		stateStack.top()->Render();
+
+		SDL_RenderPresent(renderer);
+		SDL_Delay(33);
 	}
+
+}
+
+float Game::GetDeltaTime() {
+	return dt;
+}
+
+void Game::CalculateDeltaTime() {
+	dt = (SDL_GetTicks() / 1000.0) - (frameStart / 1000.0);
+}
+
+void Game::Push(string type) {
+	if (type == "EndState") {
+		storedState = new EndState();
+	}
+	else if (type == "TitleState") {
+		storedState = new TitleState();
+	}
+	else if (type == "StageState") {
+		storedState = new StageState();
+	}
+
+}
